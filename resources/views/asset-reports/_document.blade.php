@@ -1,0 +1,10 @@
+<header class="doc-header">
+@if($logoData)<img src="{{ $logoData }}" alt="Logo sekolah">@endif
+<div><h1>{{ $school->display_name }}</h1><h2>LAPORAN INVENTARIS &amp; ASET</h2>
+@if($school->npsn)<p>NPSN: {{ $school->npsn }}</p>@endif
+@if($school->address)<p>{{ $school->address }}</p>@endif
+<p>{{ collect([$school->phone ? 'Telp. '.$school->phone : null,$school->email])->filter()->join(' · ') }}</p></div>
+</header>
+<section class="doc-filters">@foreach($filterLabels as $label=>$value)<div><span>{{ $label }}</span><b>{{ $value }}</b></div>@endforeach<div><span>Tanggal Cetak</span><b>{{ $printedAt->locale('id')->translatedFormat('d F Y, H:i') }}</b></div></section>
+<table><thead><tr><th>No</th><th>Kode</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Sumber Dana</th><th>Tahun</th><th>Jml</th><th>Kondisi</th><th>Status</th><th>Nilai/Unit</th><th>Total Nilai</th></tr></thead><tbody>@forelse($assets as $asset)<tr><td>{{ $loop->iteration }}</td><td>{{ $asset->asset_code }}</td><td>{{ $asset->name }}</td><td>{{ $asset->category->name }}</td><td>{{ $asset->location->name }}</td><td>{{ $asset->fundingSource?->name??'-' }}</td><td>{{ $asset->acquisition_year }}</td><td>{{ $asset->quantity }}</td><td>{{ $asset->condition_label }}</td><td>{{ $asset->status_label }}</td><td class="money">{{ number_format((float)$asset->acquisition_price,0,',','.') }}</td><td class="money">{{ number_format((float)$asset->acquisition_price*$asset->quantity,0,',','.') }}</td></tr>@empty<tr><td colspan="12" class="empty">Tidak ada data sesuai filter.</td></tr>@endforelse</tbody><tfoot><tr><td colspan="11">TOTAL NILAI INVENTARIS</td><td class="money">Rp {{ number_format($summary['total_value'],0,',','.') }}</td></tr></tfoot></table>
+<footer><div><span>Total Aset</span><b>{{ number_format($summary['total_assets'],0,',','.') }}</b></div><div><span>Total Unit</span><b>{{ number_format($summary['total_units'],0,',','.') }}</b></div><div><span>Total Nilai</span><b>Rp {{ number_format($summary['total_value'],0,',','.') }}</b></div></footer>

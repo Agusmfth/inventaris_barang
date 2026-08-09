@@ -1,0 +1,3 @@
+<?php
+namespace App\Http\Requests;use App\Models\Asset;use Illuminate\Foundation\Http\FormRequest;use Illuminate\Validation\Rule;
+class ReturnAssetLoanRequest extends FormRequest{public function authorize():bool{return $this->user()?->isAdmin()===true;}public function rules():array{return ['returned_at'=>['required','date'],'return_condition'=>['required',Rule::in(Asset::CONDITIONS)],'return_notes'=>['nullable','string','max:2000']];}public function messages():array{return ['returned_at.required'=>'Tanggal kembali wajib diisi.','returned_at.date'=>'Tanggal kembali tidak valid.','return_condition.required'=>'Kondisi saat dikembalikan wajib dipilih.','return_condition.in'=>'Kondisi pengembalian tidak valid.'];}}

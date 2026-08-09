@@ -1,0 +1,52 @@
+.label-page{display:flex;flex-direction:column}
+.label-inventory-mark b{max-width:16mm;text-align:left;overflow-wrap:anywhere}
+.label-page>nav{order:0}
+.label-page>#labelSelectionForm{display:contents}
+.label-page-header{order:1}
+.label-summary,.label-alert{order:2}
+.label-filter-panel{order:3}
+.label-page .category-panel{order:4}
+.label-preview-tools .single-label-quantity{min-height:48px;padding:6px 7px 6px 13px;border:1px solid #e2e8f0;border-radius:8px;display:grid!important;grid-template-columns:auto 64px auto auto;align-items:center;gap:9px;background:#f8fafc}
+.label-preview-tools .single-label-quantity label{margin:0;color:#334155;font-size:.68rem;font-weight:600;white-space:nowrap}
+.label-preview-tools .single-label-quantity input{width:64px;height:34px;padding:0 8px;border:1px solid #cbd5e1;border-radius:6px;outline:0;background:#fff;color:#0f172a;font-size:.72rem;font-weight:600;text-align:center}
+.label-preview-tools .single-label-quantity input:focus{border-color:#168568;box-shadow:0 0 0 3px rgba(4,120,87,.08)}
+.label-preview-tools .single-label-quantity span{display:inline!important;margin:0!important;color:#64748b;font-size:.63rem;white-space:nowrap}
+.label-preview-tools .single-label-quantity .btn{height:34px;margin:0;padding:0 12px;white-space:nowrap}
+@media(max-width:991.98px){.label-preview-tools{flex-wrap:wrap}.label-preview-tools .single-label-quantity{order:3;width:100%;grid-template-columns:auto 70px 1fr auto}}
+@media(max-width:767.98px){.label-preview-tools .single-label-quantity{grid-template-columns:1fr 64px auto}.label-preview-tools .single-label-quantity .btn{grid-column:1/-1;width:100%}}
+
+/* Professional school inventory card */
+.inventory-card-label{position:relative;padding:0!important;border:.35mm solid #123f32!important;border-radius:3mm!important;display:grid!important;grid-template-rows:11mm 5.5mm minmax(0,1fr) 5mm!important;overflow:hidden!important;background:#fff!important;color:#10202b!important;font-family:Arial,sans-serif!important}
+.label-card-header{position:relative;padding:1.5mm 3mm 1mm;display:flex;align-items:center;justify-content:space-between;background:#fff;overflow:hidden}
+.label-card-header:after{content:"";position:absolute;right:-8mm;top:0;width:38%;height:100%;transform:skewX(-34deg);transform-origin:bottom;background:#064e3b;border-left:1mm solid #eab308}
+.label-school-brand{position:relative;z-index:1;display:flex;align-items:center;gap:2mm;min-width:0}.label-school-brand>img{width:8mm;height:8mm;object-fit:contain}.label-school-emblem{width:7.5mm;height:7.5mm;border:.45mm solid #065f46;border-radius:50%;display:grid;place-items:center;color:#065f46;font-size:5.5pt;font-weight:800}.label-school-brand strong,.label-school-brand small{display:block;white-space:nowrap}.label-school-brand strong{color:#064e3b;font-size:10pt;line-height:1}.label-school-brand small{margin-top:1mm;color:#334155;font-size:4pt;font-weight:700;letter-spacing:.07em}.label-inventory-mark{position:relative;z-index:2;width:26%;display:flex;align-items:center;justify-content:center;gap:1.5mm;color:#fff}.label-inventory-mark span{width:6mm;height:6mm;border:.3mm solid #fff;border-radius:50%;display:grid;place-items:center;font-size:5pt}.label-inventory-mark b{font-size:5.3pt;line-height:1.1}.label-card-banner{position:relative;z-index:3;width:46%;height:5.5mm;margin-left:15%;display:grid;place-items:center;background:#065f46;color:#fff;font-size:6.5pt;font-weight:800;letter-spacing:.08em;clip-path:polygon(4% 0,100% 0,96% 100%,0 100%);box-shadow:inset 2mm 0 #d6a719,inset -2mm 0 #d6a719}.label-card-content{min-height:0;padding:1.5mm 2.5mm 1mm;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(25mm,.8fr);gap:2mm}.label-card-information{min-width:0}.label-asset-title{height:9mm;padding:1.2mm 2mm;display:flex;align-items:center;gap:2mm;border-radius:1.5mm 1.5mm 0 0;background:#10202b;color:#fff}.label-asset-symbol{width:6mm;height:6mm;border:.35mm solid #fff;border-radius:50%;display:grid;place-items:center;font-size:5pt}.label-asset-title small{display:block;margin-bottom:.6mm;color:#facc15;font-size:4.2pt;font-weight:700}.label-asset-title h2{margin:0;overflow:hidden;color:#fff;font-size:8pt;line-height:1;white-space:nowrap;text-overflow:ellipsis}.label-card-information dl{margin:0;padding:1mm 1.5mm 0}.label-card-information dl>div{min-height:3.1mm;padding:.5mm 0;border-bottom:.2mm solid #d8dee3;display:grid;grid-template-columns:25mm minmax(0,1fr);align-items:center;gap:1mm;font-size:4.6pt;line-height:1}.label-card-information dt{color:#1e293b;font-weight:700;text-transform:uppercase}.label-card-information dd{margin:0;overflow:hidden;color:#0f172a;font-weight:600;text-overflow:ellipsis;white-space:nowrap}.label-card-information dd:before{content:":";margin-right:1.5mm;color:#64748b}.label-card-badge{padding:.5mm 2mm;border-radius:10mm;color:#fff;font-size:4.3pt}.label-card-badge.condition{background:#34752d}.label-card-badge.status{background:#17579a}.label-card-scan{padding:1.3mm;border:.3mm solid #cbd5e1;border-radius:2mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;background:#fff}.label-card-scan>strong{width:100%;padding:1mm;border-radius:1mm;background:#10202b;color:#fff;text-align:center;font-size:4.5pt;line-height:1}.label-card-scan>img{width:20mm;height:20mm;display:block}.label-card-scan>small{width:100%;padding:1mm;border-radius:1mm;display:block;background:#065f46;color:#fff;text-align:center;font-size:3.7pt;line-height:1.05}.label-card-scan>small b{display:block;margin-top:.4mm;font-size:4.5pt}.inventory-card-label>footer{padding:0 3mm;border:0!important;display:flex;align-items:center;justify-content:center;gap:1.5mm;background:#064e3b;color:#fff;font-size:4.4pt!important;font-weight:700;letter-spacing:.04em}.inventory-card-label>footer span{color:#facc15}.inventory-card-label>footer b{position:absolute;right:3mm;font-size:3.8pt;font-weight:600}
+.label-size-large .inventory-card-label{grid-template-rows:13mm 6.5mm minmax(0,1fr) 6mm}.label-size-large .label-school-brand strong{font-size:12pt}.label-size-large .label-card-banner{height:6.5mm;font-size:7.5pt}.label-size-large .label-card-content{grid-template-columns:minmax(0,1.7fr) 30mm}.label-size-large .label-card-scan>img{width:25mm;height:25mm}.label-size-large .label-asset-title{height:11mm}.label-size-large .label-asset-title h2{font-size:10pt}.label-size-large .label-card-information dl>div{min-height:3.8mm;font-size:5.2pt}
+.label-size-small .inventory-card-label{grid-template-rows:8mm 4mm minmax(0,1fr) 4mm!important;border-radius:2mm!important}.label-size-small .label-card-header{padding:1mm 2mm}.label-size-small .label-school-emblem{width:5.5mm;height:5.5mm;font-size:4pt}.label-size-small .label-school-brand strong{font-size:7pt}.label-size-small .label-school-brand small,.label-size-small .label-inventory-mark b{display:none}.label-size-small .label-inventory-mark{width:16%}.label-size-small .label-card-banner{height:4mm;margin-left:12%;font-size:5pt}.label-size-small .label-card-content{padding:1mm 1.5mm;grid-template-columns:minmax(0,1fr) 18mm;gap:1mm}.label-size-small .label-asset-title{height:7mm;padding:1mm}.label-size-small .label-asset-symbol{display:none}.label-size-small .label-asset-title small{font-size:3.5pt}.label-size-small .label-asset-title h2{font-size:6.2pt}.label-size-small .label-card-information dl{padding:.5mm 1mm}.label-size-small .label-card-information dl>div{min-height:2.6mm;padding:.35mm 0;grid-template-columns:18mm;font-size:3.7pt}.label-size-small .label-secondary-row,.label-size-small .label-card-information dl>div:nth-child(2){display:none}.label-size-small .label-card-scan{padding:.7mm}.label-size-small .label-card-scan>strong,.label-size-small .label-card-scan>small{display:none}.label-size-small .label-card-scan>img{width:15mm;height:15mm}.label-size-small .inventory-card-label>footer{font-size:3.5pt!important}.label-size-small .inventory-card-label>footer b{font-size:3pt}
+@media print{.inventory-card-label{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+
+/* Medium card is the default print size: keep every row inside 90 × 50 mm. */
+.label-size-medium .inventory-card-label{grid-template-rows:9mm 4.5mm 32mm 4.5mm!important}
+.label-size-medium .label-card-header{padding:1mm 2.5mm .7mm}
+.label-size-medium .label-school-brand>img{width:7mm;height:7mm}
+.label-size-medium .label-school-emblem{width:6.5mm;height:6.5mm;font-size:4.8pt}
+.label-size-medium .label-school-brand strong{font-size:8.5pt}
+.label-size-medium .label-school-brand small{margin-top:.6mm;font-size:3.5pt}
+.label-size-medium .label-inventory-mark{width:24%}
+.label-size-medium .label-inventory-mark span{width:5mm;height:5mm}
+.label-size-medium .label-inventory-mark b{font-size:4.6pt}
+.label-size-medium .label-card-banner{height:4.5mm;margin-left:14%;font-size:5.7pt}
+.label-size-medium .label-card-content{padding:.8mm 2mm;grid-template-columns:minmax(0,1.7fr) 24mm;gap:1.5mm}
+.label-size-medium .label-asset-title{height:7.5mm;padding:.8mm 1.5mm;gap:1.5mm}
+.label-size-medium .label-asset-symbol{width:5mm;height:5mm}
+.label-size-medium .label-asset-title small{margin-bottom:.35mm;font-size:3.5pt}
+.label-size-medium .label-asset-title h2{font-size:7pt}
+.label-size-medium .label-card-information dl{padding:.4mm 1mm 0}
+.label-size-medium .label-card-information dl>div{min-height:3.65mm;padding:.35mm 0;grid-template-columns:23mm minmax(0,1fr);font-size:4.1pt}
+.label-size-medium .label-card-badge{padding:.4mm 1.4mm;font-size:3.7pt}
+.label-size-medium .label-card-scan{padding:.8mm;border-radius:1.5mm}
+.label-size-medium .label-card-scan>strong{padding:.75mm;font-size:3.8pt}
+.label-size-medium .label-card-scan>img{width:21mm;height:21mm}
+.label-size-medium .label-card-scan>small{padding:.7mm;font-size:3.2pt}
+.label-size-medium .label-card-scan>small b{font-size:3.8pt}
+.label-size-medium .inventory-card-label>footer{font-size:3.7pt!important}
+.label-size-medium .inventory-card-label>footer b{font-size:3.2pt}

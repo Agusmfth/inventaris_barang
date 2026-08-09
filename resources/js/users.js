@@ -1,0 +1,4 @@
+document.addEventListener('DOMContentLoaded',()=>{
+ document.querySelectorAll('.edit-user').forEach(button=>button.addEventListener('click',()=>{const form=document.getElementById('editUserForm');form.action=button.dataset.url;form.elements.name.value=button.dataset.name;form.elements.username.value=button.dataset.username;form.elements.email.value=button.dataset.email;form.elements.role.value=button.dataset.role;form.elements.is_active.value=button.dataset.active;}));
+ document.querySelectorAll('.password-user').forEach(button=>button.addEventListener('click',()=>{document.getElementById('passwordUserForm').action=button.dataset.url;document.getElementById('passwordUserName').textContent=`Tetapkan password baru untuk ${button.dataset.name}.`;document.getElementById('passwordUserForm').reset();}));
+});

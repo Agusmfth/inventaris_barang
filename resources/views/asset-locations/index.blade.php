@@ -1,0 +1,40 @@
+<x-app-layout title="Lokasi / Ruangan">
+    <div class="category-page">
+        <nav aria-label="breadcrumb"><ol class="breadcrumb category-breadcrumb"><li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li><li class="breadcrumb-item">Master Data</li><li class="breadcrumb-item active">Lokasi & Ruangan</li></ol></nav>
+        <header class="category-page-header"><div><h1>Lokasi / Ruangan</h1><p>Kelola lokasi penempatan barang inventaris sekolah.</p></div>@if(auth()->user()->isAdmin())<button class="btn category-primary-btn" data-bs-toggle="modal" data-bs-target="#createLocationModal"><i data-lucide="plus"></i>Tambah Lokasi</button>@endif</header>
+
+        <section class="category-mini-summary location-summary" aria-label="Ringkasan lokasi"><div><span>Total Lokasi</span><strong>{{ $totalLocations }}</strong></div><i></i><div><span>Lokasi Aktif</span><strong>{{ $activeLocations }}</strong></div><i></i><div><span>Total Aset</span><strong>{{ $totalAssets }}</strong></div></section>
+
+        <section class="category-panel">
+            <form method="GET" action="{{ route('asset-locations.index') }}" class="category-toolbar"><div class="category-search"><i data-lucide="search"></i><input name="search" value="{{ request('search') }}" placeholder="Cari nama atau kode lokasi..." aria-label="Cari lokasi"></div><select name="status" class="category-status-filter" aria-label="Filter status" onchange="this.form.submit()"><option value="">Semua Status</option><option value="active" @selected(request('status') === 'active')>Aktif</option><option value="inactive" @selected(request('status') === 'inactive')>Nonaktif</option></select><button class="btn category-search-btn" type="submit">Cari</button>@if(request()->filled('search') || request()->filled('status'))<a href="{{ route('asset-locations.index') }}" class="category-reset"><i data-lucide="rotate-ccw"></i>Reset</a>@endif</form>
+
+            @if($locations->isEmpty())
+                <div class="category-empty"><div><i data-lucide="map-pin"></i></div><h2>Belum ada lokasi inventaris</h2><p>Tambahkan lokasi untuk menentukan tempat penyimpanan dan penempatan aset.</p>@if(auth()->user()->isAdmin())<button class="btn category-primary-btn" data-bs-toggle="modal" data-bs-target="#createLocationModal"><i data-lucide="plus"></i>Tambah Lokasi</button>@endif</div>
+            @else
+                <div class="category-table-wrap"><table class="category-table location-table"><thead><tr><th>No</th><th>Kode</th><th>Nama Lokasi / Ruangan</th><th>Penanggung Jawab</th><th>Deskripsi</th><th>Jumlah Aset</th><th>Status</th>@if(auth()->user()->isAdmin())<th class="text-end">Aksi</th>@endif</tr></thead><tbody>
+                    @foreach($locations as $location)
+                        @php
+                            $locationPayload = json_encode($location->only(['id', 'code', 'name', 'person_in_charge', 'description', 'is_active']));
+                        @endphp
+                        <tr><td class="row-number">{{ str_pad($locations->firstItem() + $loop->index, 2, '0', STR_PAD_LEFT) }}</td><td><span class="category-code">{{ $location->code }}</span></td><td><b class="category-name">{{ $location->name }}</b></td><td><span class="location-person">{{ $location->person_in_charge ?: '—' }}</span></td><td><span class="category-description" title="{{ $location->description }}">{{ $location->description ?: 'Tidak ada deskripsi' }}</span></td><td><span class="asset-count">{{ (int) $location->assets_count }} Aset</span></td><td><span class="category-status {{ $location->is_active ? 'active' : 'inactive' }}">{{ $location->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
+                        @if(auth()->user()->isAdmin())<td class="text-end"><div class="dropdown"><button class="category-action" data-bs-toggle="dropdown" aria-label="Aksi untuk {{ $location->name }}"><i data-lucide="ellipsis-vertical"></i></button><ul class="dropdown-menu dropdown-menu-end category-action-menu"><li><button class="dropdown-item edit-location" type="button" data-bs-toggle="modal" data-bs-target="#editLocationModal" data-update-url="{{ route('asset-locations.update', $location) }}" data-location="{{ $locationPayload }}"><i data-lucide="pencil"></i>Edit</button></li><li><form method="POST" action="{{ route('asset-locations.toggle', $location) }}">@csrf @method('PATCH')<button class="dropdown-item" type="submit"><i data-lucide="power"></i>{{ $location->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</button></form></li><li><hr class="dropdown-divider"></li><li><button class="dropdown-item delete-location text-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-delete-url="{{ route('asset-locations.destroy', $location) }}" data-location-name="{{ $location->name }}"><i data-lucide="trash-2"></i>Hapus</button></li></ul></div></td>@endif</tr>
+                    @endforeach
+                </tbody></table></div>
+                <div class="category-pagination"><span>Menampilkan {{ $locations->firstItem() }}–{{ $locations->lastItem() }} dari {{ $locations->total() }} lokasi</span>{{ $locations->links() }}</div>
+            @endif
+        </section>
+    </div>
+
+    @if(auth()->user()->isAdmin())
+    <div class="modal fade category-modal" id="createLocationModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><div><h2>Tambah Lokasi / Ruangan</h2><p>Tambahkan lokasi penempatan inventaris sekolah.</p></div><button class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><form method="POST" action="{{ route('asset-locations.store') }}">@csrf<input type="hidden" name="_form_mode" value="create"><div class="modal-body">@include('asset-locations.partials.form-fields', ['prefix' => 'create', 'showErrors' => old('_form_mode', 'create') === 'create'])</div><div class="modal-footer"><button type="button" class="btn category-cancel-btn" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn category-primary-btn">Simpan Lokasi</button></div></form></div></div></div>
+
+    <div class="modal fade category-modal" id="editLocationModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><div><h2>Edit Lokasi / Ruangan</h2><p>Perbarui informasi lokasi yang dipilih.</p></div><button class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button></div><form method="POST" id="editLocationForm" action="{{ old('_location_id') ? route('asset-locations.update', old('_location_id')) : '#' }}">@csrf @method('PUT')<input type="hidden" name="_form_mode" value="edit"><input type="hidden" name="_location_id" value="{{ old('_location_id') }}"><div class="modal-body">@include('asset-locations.partials.form-fields', ['prefix' => 'edit', 'showErrors' => old('_form_mode') === 'edit'])</div><div class="modal-footer"><button type="button" class="btn category-cancel-btn" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn category-primary-btn">Simpan Perubahan</button></div></form></div></div></div>
+
+    <div class="modal fade category-modal delete-modal" id="deleteLocationModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content"><form method="POST" id="deleteLocationForm">@csrf @method('DELETE')<div class="modal-body"><div class="delete-icon"><i data-lucide="trash-2"></i></div><h2>Hapus lokasi?</h2><p><b id="deleteLocationName"></b> akan dihapus dari daftar lokasi.</p></div><div class="modal-footer"><button type="button" class="btn category-cancel-btn" data-bs-dismiss="modal">Batal</button><button type="submit" class="btn category-delete-btn">Hapus Lokasi</button></div></form></div></div></div>
+    @endif
+
+    @php
+        $locationFormState = ['mode' => old('_form_mode'), 'locationId' => old('_location_id')];
+    @endphp
+    @push('scripts')<script>window.locationFormState = @json($locationFormState);</script>@vite('resources/js/asset-locations.js')@endpush
+</x-app-layout>
