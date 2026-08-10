@@ -1,17 +1,47 @@
 <x-app-layout title="Cetak Label Inventaris">
 <div class="category-page label-page">
     <nav aria-label="breadcrumb"><ol class="breadcrumb category-breadcrumb"><li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li><li class="breadcrumb-item">Inventaris</li><li class="breadcrumb-item active">Cetak Label</li></ol></nav>
-    <form method="POST" action="{{ route('asset-labels.preview') }}" id="labelSelectionForm" data-turbo="false" data-no-submit-loading>@csrf
+    <form method="POST" action="{{ route('asset-labels.preview') }}" id="labelSelectionForm" data-turbo="false" data-no-submit-loading
+        data-school-name="{{ $schoolSetting->display_name }}"
+        data-school-mark="{{ $schoolSetting->label_mark }}"
+        data-school-logo="{{ $schoolSetting->logo_url }}"
+    >@csrf
         <header class="category-page-header label-page-header"><div><h1>Cetak Label Inventaris</h1><p>Pilih aset yang ingin dibuatkan label inventaris.</p></div><button class="btn category-primary-btn label-preview-submit" id="labelPreviewButton" disabled><i data-lucide="printer"></i><span>Preview & Cetak Label</span></button></header>
         <section class="category-mini-summary asset-mini-summary label-summary"><div><span>Total Aset</span><strong>{{ number_format($totalAssets,0,',','.') }}</strong></div><i></i><div><span>Terpilih</span><strong id="selectedAssetCount">0</strong><small>aset</small></div></section>
         @if($errors->any())<div class="alert alert-danger label-alert" role="alert"><i data-lucide="circle-alert"></i><div><strong>Label belum dapat diproses.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div></div>@endif
-        <section class="category-panel">
-            <div class="asset-toolbar label-toolbar"><div class="label-filter-note"><i data-lucide="sliders-horizontal"></i>Gunakan pencarian dan filter untuk menemukan aset.</div><div class="label-size-field"><label for="labelSize">Ukuran Label</label><select name="size" id="labelSize"><option value="small" @selected(old('size')==='small')>Kecil — 70 × 35 mm</option><option value="medium" @selected(old('size','medium')==='medium')>Sedang — 90 × 50 mm</option><option value="large" @selected(old('size')==='large')>Besar — 100 × 60 mm</option></select></div></div>
-            @if($assets->isEmpty())<div class="category-empty"><div><i data-lucide="qr-code"></i></div><h2>Tidak ada aset ditemukan</h2><p>Ubah pencarian atau filter untuk menampilkan aset.</p></div>@else
-            <div class="category-table-wrap"><table class="category-table label-table"><thead><tr><th class="label-check"><input type="checkbox" id="selectAllAssets" aria-label="Pilih semua aset pada halaman"></th><th>Kode Aset</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Tahun</th><th>Kondisi</th><th>Jumlah Label</th><th>Preview</th></tr></thead><tbody>
-                @foreach($assets as $asset)<tr data-label-row><td class="label-check"><input type="checkbox" class="asset-selector" name="asset_ids[]" value="{{ $asset->id }}" id="asset{{ $asset->id }}" @checked(in_array($asset->id,old('asset_ids',[])))></td><td><label for="asset{{ $asset->id }}" class="asset-code">{{ $asset->asset_code }}</label></td><td><div class="asset-name-cell"><b>{{ $asset->name }}</b><small>{{ $asset->quantity }} unit tersedia</small></div></td><td>{{ $asset->category->name }}</td><td>{{ $asset->location->name }}</td><td>{{ $asset->acquisition_year }}</td><td><span class="asset-badge condition-{{ $asset->condition }}">{{ $asset->condition_label }}</span></td><td><div class="label-quantity"><input type="number" name="quantities[{{ $asset->id }}]" value="{{ old('quantities.'.$asset->id,1) }}" min="1" max="{{ $asset->quantity }}" disabled aria-label="Jumlah label untuk {{ $asset->name }}"><span>/ {{ $asset->quantity }}</span></div></td><td><a href="{{ route('asset-labels.single',$asset) }}" class="label-view-link"><i data-lucide="eye"></i>Lihat Label</a></td></tr>@endforeach
-            </tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} aset</span>{{ $assets->links() }}</div>@endif
-        </section>
+        <div class="label-split-layout">
+            <section class="category-panel label-split-main">
+                <div class="asset-toolbar label-toolbar"><div class="label-filter-note"><i data-lucide="sliders-horizontal"></i>Gunakan pencarian dan filter untuk menemukan aset.</div><div class="label-size-field"><label for="labelSize">Ukuran Label</label><select name="size" id="labelSize"><option value="small" @selected(old('size')==='small')>Kecil — 70 × 35 mm</option><option value="medium" @selected(old('size','medium')==='medium')>Sedang — 90 × 50 mm</option><option value="large" @selected(old('size')==='large')>Besar — 100 × 60 mm</option></select></div></div>
+                @if($assets->isEmpty())<div class="category-empty"><div><i data-lucide="qr-code"></i></div><h2>Tidak ada aset ditemukan</h2><p>Ubah pencarian atau filter untuk menampilkan aset.</p></div>@else
+                <div class="category-table-wrap"><table class="category-table label-table"><thead><tr><th class="label-check"><input type="checkbox" id="selectAllAssets" aria-label="Pilih semua aset pada halaman"></th><th>Kode Aset</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Tahun</th><th>Kondisi</th><th>Jumlah Label</th><th>Preview</th></tr></thead><tbody>
+                    @foreach($assets as $asset)<tr data-label-row
+                        data-asset-id="{{ $asset->id }}"
+                        data-asset-code="{{ $asset->asset_code }}"
+                        data-asset-name="{{ $asset->name }}"
+                        data-asset-category="{{ $asset->category->name }}"
+                        data-asset-location="{{ $asset->location->name }}"
+                        data-asset-year="{{ $asset->acquisition_year }}"
+                        data-asset-condition="{{ $asset->condition_label }}"
+                        data-asset-status="{{ $asset->status_label }}"
+                        data-asset-qr-image="{{ app(\App\Services\AssetQrCodeService::class)->svgDataUri($asset, 100) }}"
+                    ><td class="label-check"><input type="checkbox" class="asset-selector" name="asset_ids[]" value="{{ $asset->id }}" id="asset{{ $asset->id }}" @checked(in_array($asset->id,old('asset_ids',[])))></td><td><label for="asset{{ $asset->id }}" class="asset-code">{{ $asset->asset_code }}</label></td><td><div class="asset-name-cell"><b>{{ $asset->name }}</b><small>{{ $asset->quantity }} unit tersedia</small></div></td><td>{{ $asset->category->name }}</td><td>{{ $asset->location->name }}</td><td>{{ $asset->acquisition_year }}</td><td><span class="asset-badge condition-{{ $asset->condition }}">{{ $asset->condition_label }}</span></td><td><div class="label-quantity"><input type="number" name="quantities[{{ $asset->id }}]" value="{{ old('quantities.'.$asset->id,1) }}" min="1" max="{{ $asset->quantity }}" disabled aria-label="Jumlah label untuk {{ $asset->name }}"><span>/ {{ $asset->quantity }}</span></div></td><td><a href="{{ route('asset-labels.single',$asset) }}" class="label-view-link"><i data-lucide="eye"></i>Lihat Label</a></td></tr>@endforeach
+                </tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} aset</span>{{ $assets->links() }}</div>@endif
+            </section>
+            <aside class="label-live-preview" id="labelLivePreview">
+                <div class="label-live-preview-header">
+                    <i data-lucide="layout-template"></i>
+                    <span>Preview Label</span>
+                    <small id="labelLiveCount">0 dipilih</small>
+                </div>
+                <div class="label-live-preview-body" id="labelLivePreviewBody">
+                    <div class="label-live-empty" id="labelLiveEmpty">
+                        <i data-lucide="mouse-pointer-click"></i>
+                        <p>Pilih aset dari tabel untuk melihat preview label</p>
+                    </div>
+                    <div class="label-live-cards" id="labelLiveCards"></div>
+                </div>
+            </aside>
+        </div>
     </form>
     <form method="GET" action="{{ route('asset-labels.index') }}" class="asset-toolbar label-filter-panel"><div class="category-search asset-search"><i data-lucide="search"></i><input name="search" value="{{ request('search') }}" placeholder="Cari kode atau nama aset..."></div><div class="asset-filters"><select name="category"><option value="">Semua Kategori</option>@foreach($categories as $category)<option value="{{ $category->id }}" @selected(request('category')==$category->id)>{{ $category->name }}</option>@endforeach</select><select name="location"><option value="">Semua Lokasi</option>@foreach($locations as $location)<option value="{{ $location->id }}" @selected(request('location')==$location->id)>{{ $location->name }}</option>@endforeach</select><select name="condition"><option value="">Semua Kondisi</option><option value="baik" @selected(request('condition')==='baik')>Baik</option><option value="rusak_ringan" @selected(request('condition')==='rusak_ringan')>Rusak Ringan</option><option value="rusak_berat" @selected(request('condition')==='rusak_berat')>Rusak Berat</option></select><select name="year"><option value="">Semua Tahun</option>@foreach($years as $year)<option value="{{ $year }}" @selected(request('year')==$year)>{{ $year }}</option>@endforeach</select></div><div class="asset-filter-actions"><button class="btn category-search-btn">Filter</button>@if(collect(request()->only(['search','category','location','condition','year']))->filter()->isNotEmpty())<a href="{{ route('asset-labels.index') }}" class="category-reset"><i data-lucide="rotate-ccw"></i>Reset</a>@endif</div></form>
 </div>

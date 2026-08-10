@@ -31,9 +31,7 @@ class AppServiceProvider extends ServiceProvider
         }
         View::composer('*', fn ($view) => $view->with('schoolSetting', app(SchoolSetting::class)));
         View::composer('partials.topbar', function ($view) {
-            if ($this->app->runningUnitTests()) {
-                app(AssetNotificationService::class)->syncOverdue();
-            } else {
+            if (!$this->app->runningUnitTests()) {
                 Cache::remember('notifications:overdue-synced', now()->addMinute(), function () {
                     app(AssetNotificationService::class)->syncOverdue();
                     return true;
