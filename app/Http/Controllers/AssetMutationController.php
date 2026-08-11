@@ -11,12 +11,19 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 class AssetMutationController extends Controller {
     public function index(Request $request): View {
-        $filters=$request->validate(['search'=>['nullable','string','max:100'],'from'=>['nullable','integer','exists:asset_locations,id'],'to'=>['nullable','integer','exists:asset_locations,id'],'month'=>['nullable','date_format:Y-m']]);
+        $filters=$request->validate([
+            'search'=>['nullable','string','max:100'],
+            'from'=>['nullable','integer','exists:asset_locations,id'],
+            'to'=>['nullable','integer','exists:asset_locations,id'],
+            'month'=>['nullable','date_format:Y-m'],
+            'per_page'=>['nullable','integer','in:10,20,50,100']
+        ]);
+        $perPage=$request->integer('per_page',10);
         $mutations=AssetMutation::with(['asset:id,asset_code,name','fromLocation:id,name','toLocation:id,name','creator:id,name'])
             ->when($filters['search']??null,fn($q,$s)=>$q->whereHas('asset',fn($a)=>$a->where('asset_code','like',"%{$s}%")->orWhere('name','like',"%{$s}%")))
             ->when($filters['from']??null,fn($q,$id)=>$q->where('from_location_id',$id))->when($filters['to']??null,fn($q,$id)=>$q->where('to_location_id',$id))
             ->when($filters['month']??null,fn($q,$month)=>$q->whereYear('mutation_date',substr($month,0,4))->whereMonth('mutation_date',substr($month,5,2)))
-            ->latest('mutation_date')->latest('id')->paginate(10)->withQueryString();
+            ->latest('mutation_date')->latest('id')->paginate($perPage)->withQueryString();
         return view('asset-mutations.index',['mutations'=>$mutations,'totalMutations'=>AssetMutation::count(),'thisMonth'=>AssetMutation::whereYear('mutation_date',now()->year)->whereMonth('mutation_date',now()->month)->count(),'mutatedAssets'=>AssetMutation::distinct('asset_id')->count('asset_id'),'assets'=>Asset::with('location:id,name')->whereNotIn('status',['perawatan','dihapus'])->whereDoesntHave('loans',fn($q)=>$q->whereNull('returned_at'))->orderBy('name')->get(['id','asset_code','name','location_id']),'locations'=>AssetLocation::orderBy('name')->get(['id','name','is_active']),'activeLocations'=>AssetLocation::where('is_active',true)->orderBy('name')->get(['id','name'])]);
     }
     public function store(StoreAssetMutationRequest $request): RedirectResponse {

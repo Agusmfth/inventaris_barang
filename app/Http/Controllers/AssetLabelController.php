@@ -21,14 +21,16 @@ class AssetLabelController extends Controller
             'search'=>['nullable','string','max:100'], 'category'=>['nullable','integer','exists:asset_categories,id'],
             'location'=>['nullable','integer','exists:asset_locations,id'], 'condition'=>['nullable',Rule::in(Asset::CONDITIONS)],
             'year'=>['nullable','integer','min:1900','max:'.(now()->year + 1)],
+            'per_page'=>['nullable','integer','in:10,20,50,100']
         ]);
+        $perPage = $request->integer('per_page', 10);
         $assets = Asset::with(['category:id,name','location:id,name'])
             ->when($filters['search'] ?? null, fn ($query,$search) => $query->where(fn ($q) => $q->where('asset_code','like',"%{$search}%")->orWhere('name','like',"%{$search}%")))
             ->when($filters['category'] ?? null, fn ($query,$id) => $query->where('category_id',$id))
             ->when($filters['location'] ?? null, fn ($query,$id) => $query->where('location_id',$id))
             ->when($filters['condition'] ?? null, fn ($query,$condition) => $query->where('condition',$condition))
             ->when($filters['year'] ?? null, fn ($query,$year) => $query->where('acquisition_year',$year))
-            ->where('status','!=','dihapus')->latest()->paginate(10)->withQueryString();
+            ->where('status','!=','dihapus')->latest()->paginate($perPage)->withQueryString();
 
         return view('asset-labels.index', [
             'assets'=>$assets, 'totalAssets'=>Asset::where('status','!=','dihapus')->count(),

@@ -10,9 +10,15 @@ class AssetQrCodeController extends Controller
     public function __construct(private readonly AssetQrCodeService $qr){}
     public function index(Request $request):View
     {
-        $f=$request->validate(['search'=>['nullable','string','max:100'],'category'=>['nullable','integer','exists:asset_categories,id'],'location'=>['nullable','integer','exists:asset_locations,id'],'condition'=>['nullable',Rule::in(Asset::CONDITIONS)],'status'=>['nullable',Rule::in(Asset::STATUSES)]]);
-        $assets=Asset::with(['category:id,name','location:id,name'])->when($f['search']??null,fn($q,$v)=>$q->where(fn($n)=>$n->where('asset_code','like',"%{$v}%")->orWhere('name','like',"%{$v}%")))->when($f['category']??null,fn($q,$v)=>$q->where('category_id',$v))->when($f['location']??null,fn($q,$v)=>$q->where('location_id',$v))->when($f['condition']??null,fn($q,$v)=>$q->where('condition',$v))->when($f['status']??null,fn($q,$v)=>$q->where('status',$v))->latest()->paginate(12)->withQueryString();
-        $assets->getCollection()->each(fn($asset)=>$asset->setAttribute('qr_data_uri',$this->qr->svgDataUri($asset)));
+        $f=$request->validate([
+            'search'=>['nullable','string','max:100'],
+            'category'=>['nullable','integer','exists:asset_categories,id'],
+            'location'=>['nullable','integer','exists:asset_locations,id'],
+            'condition'=>['nullable',Rule::in(Asset::CONDITIONS)],
+            'status'=>['nullable',Rule::in(Asset::STATUSES)]
+        ]);
+        $assets=Asset::with(['category:id,name','location:id,name'])->when($f['search']??null,fn($q,$v)=>$q->where(fn($n)=>$n->where('asset_code','like',"%{$v}%")->orWhere('name','like',"%{$v}%")))->when($f['category']??null,fn($q,$v)=>$q->where('category_id',$v))->when($f['location']??null,fn($q,$v)=>$q->where('location_id',$v))->when($f['condition']??null,fn($q,$v)=>$q->where('condition',$v))->when($f['status']??null,fn($q,$v)=>$q->where('status',$v))->latest()->get();
+        $assets->each(fn($asset)=>$asset->setAttribute('qr_data_uri',$this->qr->svgDataUri($asset)));
         return view('asset-qr-codes.index',['assets'=>$assets,'categories'=>AssetCategory::orderBy('name')->get(['id','name']),'locations'=>AssetLocation::orderBy('name')->get(['id','name']),'summary'=>['total'=>Asset::count(),'qr'=>Asset::count(),'active'=>Asset::where('status','!=','dihapus')->count()]]);
     }
     public function download(Asset $asset){return response($this->qr->png($asset),200,['Content-Type'=>'image/png','Content-Disposition'=>'attachment; filename="QR-'.$asset->asset_code.'.png"','Cache-Control'=>'private, no-store']);}

@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;use Illuminate\Http\Request;use Illuminate\Notifications\DatabaseNotification;use Illuminate\View\View;
 class NotificationController extends Controller
 {
- public function index(Request $request):View{$f=$request->validate(['status'=>['nullable','in:unread,read'],'type'=>['nullable','in:loan,maintenance,disposal,mutation,system']]);$q=$request->user()->notifications()->when(($f['status']??null)==='unread',fn($q)=>$q->whereNull('read_at'))->when(($f['status']??null)==='read',fn($q)=>$q->whereNotNull('read_at'))->when($f['type']??null,fn($q,$v)=>$q->where('data','like','%"type":"'.$v.'_%'));return view('notifications.index',['notifications'=>$q->latest()->paginate(15)->withQueryString()]);}
+ public function index(Request $request):View{$f=$request->validate(['status'=>['nullable','in:unread,read'],'type'=>['nullable','in:loan,maintenance,disposal,mutation,system'],'per_page'=>['nullable','integer','in:15,30,50,100']]);$perPage=$request->integer('per_page',15);$q=$request->user()->notifications()->when(($f['status']??null)==='unread',fn($q)=>$q->whereNull('read_at'))->when(($f['status']??null)==='read',fn($q)=>$q->whereNotNull('read_at'))->when($f['type']??null,fn($q,$v)=>$q->where('data','like','%\"type\":\"'.$v.'_%'));return view('notifications.index',['notifications'=>$q->latest()->paginate($perPage)->withQueryString()]);}
  public function open(Request $request,string $notification):RedirectResponse
  {
   $item=$request->user()->notifications()->findOrFail($notification);

@@ -13,12 +13,17 @@ class AssetLocationController extends Controller
 {
     public function index(Request $request): View
     {
-        $filters = $request->validate(['search' => ['nullable', 'string', 'max:100'], 'status' => ['nullable', 'in:active,inactive']]);
+        $filters = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'status' => ['nullable', 'in:active,inactive'],
+            'per_page' => ['nullable', 'integer', 'in:10,20,50,100']
+        ]);
+        $perPage = $request->integer('per_page', 10);
         $locations = AssetLocation::query()->withSum(['assets as assets_count'=>fn($q)=>$q->where('status','!=','dihapus')], 'quantity')
             ->when($filters['search'] ?? null, fn ($query, $search) => $query->where(fn ($nested) => $nested->where('name', 'like', "%{$search}%")->orWhere('code', 'like', "%{$search}%")->orWhere('person_in_charge', 'like', "%{$search}%")))
             ->when(($filters['status'] ?? null) === 'active', fn ($query) => $query->where('is_active', true))
             ->when(($filters['status'] ?? null) === 'inactive', fn ($query) => $query->where('is_active', false))
-            ->orderBy('code')->paginate(10)->withQueryString();
+            ->orderBy('code')->paginate($perPage)->withQueryString();
 
         return view('asset-locations.index', [
             'locations' => $locations,

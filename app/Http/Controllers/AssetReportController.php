@@ -18,7 +18,8 @@ class AssetReportController extends Controller
     public function index(Request $request)
     {
         $filters = $this->filters($request);
-        $assets = $this->reports->build($filters)->paginate(25)->withQueryString();
+        $perPage = $request->integer('per_page', 25);
+        $assets = $this->reports->build($filters)->paginate($perPage)->withQueryString();
         return view('asset-reports.index', array_merge($this->viewData($filters), compact('assets')));
     }
 

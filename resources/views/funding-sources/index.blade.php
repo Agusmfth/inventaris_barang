@@ -16,7 +16,20 @@
                 <tr><td class="row-number">{{ str_pad($sources->firstItem() + $loop->index, 2, '0', STR_PAD_LEFT) }}</td><td><span class="category-code">{{ $source->code }}</span></td><td><b class="category-name">{{ $source->name }}</b></td><td><span class="category-description" title="{{ $source->description }}">{{ $source->description ?: 'Tidak ada deskripsi' }}</span></td><td><span class="asset-count">{{ (int) $source->assets_count }} Aset</span></td><td><span class="category-status {{ $source->is_active ? 'active' : 'inactive' }}">{{ $source->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
                 @if(auth()->user()->isAdmin())<td class="text-end"><div class="dropdown"><button class="category-action" data-bs-toggle="dropdown" aria-label="Aksi untuk {{ $source->name }}"><i data-lucide="ellipsis-vertical"></i></button><ul class="dropdown-menu dropdown-menu-end category-action-menu"><li><button class="dropdown-item edit-source" type="button" data-bs-toggle="modal" data-bs-target="#editSourceModal" data-update-url="{{ route('funding-sources.update', $source) }}" data-source="{{ $sourcePayload }}"><i data-lucide="pencil"></i>Edit</button></li><li><form method="POST" action="{{ route('funding-sources.toggle', $source) }}">@csrf @method('PATCH')<button class="dropdown-item"><i data-lucide="power"></i>{{ $source->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</button></form></li><li><hr class="dropdown-divider"></li><li><button class="dropdown-item delete-source text-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteSourceModal" data-delete-url="{{ route('funding-sources.destroy', $source) }}" data-source-name="{{ $source->name }}"><i data-lucide="trash-2"></i>Hapus</button></li></ul></div></td>@endif</tr>
             @endforeach
-            </tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $sources->firstItem() }}–{{ $sources->lastItem() }} dari {{ $sources->total() }} sumber dana</span>{{ $sources->links() }}</div>
+            </tbody></table></div>
+            <div class="category-pagination">
+                <div class="pagination-wrapper">
+                    <span>Tampilkan:</span>
+                    <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                        <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                        <option value="20" @selected(request('per_page') == 20)>20</option>
+                        <option value="50" @selected(request('per_page') == 50)>50</option>
+                        <option value="100" @selected(request('per_page') == 100)>100</option>
+                    </select>
+                    <span>Menampilkan {{ $sources->firstItem() }}–{{ $sources->lastItem() }} dari {{ $sources->total() }} sumber dana</span>
+                </div>
+                {{ $sources->links() }}
+            </div>
         @endif
     </section>
 </div>

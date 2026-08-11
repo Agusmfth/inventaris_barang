@@ -25,7 +25,20 @@
                         data-asset-status="{{ $asset->status_label }}"
                         data-asset-qr-image="{{ app(\App\Services\AssetQrCodeService::class)->svgDataUri($asset, 100) }}"
                     ><td class="label-check"><input type="checkbox" class="asset-selector" name="asset_ids[]" value="{{ $asset->id }}" id="asset{{ $asset->id }}" @checked(in_array($asset->id,old('asset_ids',[])))></td><td><label for="asset{{ $asset->id }}" class="asset-code">{{ $asset->asset_code }}</label></td><td><div class="asset-name-cell"><b>{{ $asset->name }}</b><small>{{ $asset->quantity }} unit tersedia</small></div></td><td>{{ $asset->category->name }}</td><td>{{ $asset->location->name }}</td><td>{{ $asset->acquisition_year }}</td><td><span class="asset-badge condition-{{ $asset->condition }}">{{ $asset->condition_label }}</span></td><td><div class="label-quantity"><input type="number" name="quantities[{{ $asset->id }}]" value="{{ old('quantities.'.$asset->id,1) }}" min="1" max="{{ $asset->quantity }}" disabled aria-label="Jumlah label untuk {{ $asset->name }}"><span>/ {{ $asset->quantity }}</span></div></td><td><a href="{{ route('asset-labels.single',$asset) }}" class="label-view-link"><i data-lucide="eye"></i>Lihat Label</a></td></tr>@endforeach
-                </tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} aset</span>{{ $assets->links() }}</div>@endif
+                </tbody></table></div>
+                <div class="category-pagination">
+                    <div class="pagination-wrapper">
+                        <span>Tampilkan:</span>
+                        <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                            <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                            <option value="20" @selected(request('per_page') == 20)>20</option>
+                            <option value="50" @selected(request('per_page') == 50)>50</option>
+                            <option value="100" @selected(request('per_page') == 100)>100</option>
+                        </select>
+                        <span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} aset</span>
+                    </div>
+                    {{ $assets->links() }}
+                </div>@endif
             </section>
             <aside class="label-live-preview" id="labelLivePreview">
                 <div class="label-live-preview-header">

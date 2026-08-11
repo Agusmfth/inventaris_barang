@@ -12,10 +12,16 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $filters = $request->validate(['search'=>['nullable','string','max:100'],'role'=>['nullable',Rule::in([User::ROLE_ADMIN,User::ROLE_KEPALA_SEKOLAH])],'status'=>['nullable',Rule::in(['active','inactive'])]]);
+        $filters = $request->validate([
+            'search'=>['nullable','string','max:100'],
+            'role'=>['nullable',Rule::in([User::ROLE_ADMIN,User::ROLE_KEPALA_SEKOLAH])],
+            'status'=>['nullable',Rule::in(['active','inactive'])],
+            'per_page'=>['nullable','integer',Rule::in([10,20,50,100])]
+        ]);
+        $perPage = $request->integer('per_page', 10);
         $users = User::query()->when($filters['search'] ?? null,fn($q,$v)=>$q->where(fn($n)=>$n->where('name','like',"%{$v}%")->orWhere('username','like',"%{$v}%")))
             ->when($filters['role'] ?? null,fn($q,$v)=>$q->where('role',$v))->when(($filters['status']??null)==='active',fn($q)=>$q->where('is_active',true))->when(($filters['status']??null)==='inactive',fn($q)=>$q->where('is_active',false))
-            ->orderByDesc('is_active')->orderBy('name')->paginate(10)->withQueryString();
+            ->orderByDesc('is_active')->orderBy('name')->paginate($perPage)->withQueryString();
         return view('users.index',['users'=>$users,'totalUsers'=>User::count(),'activeUsers'=>User::where('is_active',true)->count(),'adminUsers'=>User::where('role',User::ROLE_ADMIN)->count(),'headUsers'=>User::where('role',User::ROLE_KEPALA_SEKOLAH)->count()]);
     }
 

@@ -8,7 +8,19 @@
         <form class="asset-toolbar maintenance-toolbar" method="GET"><div class="category-search asset-search"><i data-lucide="search"></i><input name="search" value="{{ request('search') }}" placeholder="Cari kode atau nama aset..."></div><div class="asset-filters"><select name="status"><option value="">Semua Status</option>@foreach(['menunggu'=>'Menunggu','diproses'=>'Sedang Diproses','selesai'=>'Selesai','dibatalkan'=>'Dibatalkan'] as $key=>$label)<option value="{{ $key }}" @selected(request('status')===$key)>{{ $label }}</option>@endforeach</select><select name="condition"><option value="">Semua Kondisi</option>@foreach(['baik'=>'Baik','rusak_ringan'=>'Rusak Ringan','rusak_berat'=>'Rusak Berat'] as $key=>$label)<option value="{{ $key }}" @selected(request('condition')===$key)>{{ $label }}</option>@endforeach</select><input type="date" name="date" value="{{ request('date') }}" title="Tanggal laporan"><select name="location"><option value="">Semua Lokasi</option>@foreach($locations as $location)<option value="{{ $location->id }}" @selected((string)request('location')===(string)$location->id)>{{ $location->name }}</option>@endforeach</select></div><div class="asset-filter-actions"><button class="btn category-search-btn">Filter</button></div></form>
         @if($maintenances->isEmpty())<div class="category-empty"><div><i data-lucide="wrench"></i></div><h2>Belum ada data perawatan</h2><p>Laporan kerusakan dan perawatan aset akan tampil di sini.</p></div>@else
         <div class="category-table-wrap"><table class="category-table maintenance-table"><thead><tr><th>Tanggal</th><th>Kode Aset</th><th>Nama Aset</th><th>Keluhan</th><th>Kondisi</th><th>Status</th><th>Biaya</th><th class="text-end">Aksi</th></tr></thead><tbody>@foreach($maintenances as $maintenance)<tr><td>{{ $maintenance->reported_date->locale('id')->translatedFormat('d M Y') }}</td><td><b class="asset-code">{{ $maintenance->asset->asset_code }}</b></td><td><b>{{ $maintenance->asset->name }}</b><small>{{ $maintenance->asset->location->name }}</small></td><td><span class="maintenance-issue" title="{{ $maintenance->issue }}">{{ Str::limit($maintenance->issue,45) }}</span></td><td><span class="asset-badge condition-{{ $maintenance->initial_condition }}">{{ $maintenance->initial_condition_label }}</span></td><td><span class="maintenance-status {{ $maintenance->maintenance_status }}">{{ $maintenance->status_label }}</span></td><td>Rp {{ number_format((float)($maintenance->maintenance_status==='selesai'?$maintenance->actual_cost:$maintenance->estimated_cost),0,',','.') }}</td><td class="text-end"><a href="{{ route('asset-maintenances.show',$maintenance) }}" class="category-action" aria-label="Lihat detail"><i data-lucide="eye"></i></a></td></tr>@endforeach</tbody></table></div>
-        <div class="category-pagination"><span>Menampilkan {{ $maintenances->firstItem() }}–{{ $maintenances->lastItem() }} dari {{ $maintenances->total() }} perawatan</span>{{ $maintenances->links() }}</div>@endif
+        <div class="category-pagination">
+            <div class="pagination-wrapper">
+                <span>Tampilkan:</span>
+                <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                    <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                    <option value="20" @selected(request('per_page') == 20)>20</option>
+                    <option value="50" @selected(request('per_page') == 50)>50</option>
+                    <option value="100" @selected(request('per_page') == 100)>100</option>
+                </select>
+                <span>Menampilkan {{ $maintenances->firstItem() }}–{{ $maintenances->lastItem() }} dari {{ $maintenances->total() }} perawatan</span>
+            </div>
+            {{ $maintenances->links() }}
+        </div>@endif
     </section>
 </div>
 @if(auth()->user()->isAdmin())

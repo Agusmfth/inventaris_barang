@@ -24,7 +24,9 @@ class AssetController extends Controller
             'search' => ['nullable','string','max:100'], 'category' => ['nullable','integer','exists:asset_categories,id'],
             'location' => ['nullable','integer','exists:asset_locations,id'], 'condition' => ['nullable','in:baik,rusak_ringan,rusak_berat'],
             'status' => ['nullable','in:tersedia,dipinjam,perawatan,dihapus'], 'year' => ['nullable','integer','min:1900','max:'.(now()->year + 1)],
+            'per_page' => ['nullable','integer','in:10,20,50,100']
         ]);
+        $perPage = $request->integer('per_page', 10);
         $assets = Asset::with(['category:id,name', 'location:id,name'])
             ->when($filters['search'] ?? null, fn ($q,$search) => $q->where(fn ($n) => $n->where('asset_code','like',"%{$search}%")->orWhere('name','like',"%{$search}%")->orWhere('brand','like',"%{$search}%")->orWhere('model','like',"%{$search}%")->orWhere('serial_number','like',"%{$search}%")))
             ->when($filters['category'] ?? null, fn ($q,$id) => $q->where('category_id',$id))
@@ -32,7 +34,7 @@ class AssetController extends Controller
             ->when($filters['condition'] ?? null, fn ($q,$value) => $q->where('condition',$value))
             ->when($filters['status'] ?? null, fn ($q,$value) => $q->where('status',$value))
             ->when($filters['year'] ?? null, fn ($q,$value) => $q->where('acquisition_year',$value))
-            ->latest()->paginate(10)->withQueryString();
+            ->latest()->paginate($perPage)->withQueryString();
 
         return view('assets.index', [
             'assets'=>$assets, 'categories'=>AssetCategory::orderBy('name')->get(['id','name']), 'locations'=>AssetLocation::orderBy('name')->get(['id','name']),

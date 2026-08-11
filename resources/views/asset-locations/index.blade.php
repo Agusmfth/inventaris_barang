@@ -20,7 +20,19 @@
                         @if(auth()->user()->isAdmin())<td class="text-end"><div class="dropdown"><button class="category-action" data-bs-toggle="dropdown" aria-label="Aksi untuk {{ $location->name }}"><i data-lucide="ellipsis-vertical"></i></button><ul class="dropdown-menu dropdown-menu-end category-action-menu"><li><button class="dropdown-item edit-location" type="button" data-bs-toggle="modal" data-bs-target="#editLocationModal" data-update-url="{{ route('asset-locations.update', $location) }}" data-location="{{ $locationPayload }}"><i data-lucide="pencil"></i>Edit</button></li><li><form method="POST" action="{{ route('asset-locations.toggle', $location) }}">@csrf @method('PATCH')<button class="dropdown-item" type="submit"><i data-lucide="power"></i>{{ $location->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</button></form></li><li><hr class="dropdown-divider"></li><li><button class="dropdown-item delete-location text-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteLocationModal" data-delete-url="{{ route('asset-locations.destroy', $location) }}" data-location-name="{{ $location->name }}"><i data-lucide="trash-2"></i>Hapus</button></li></ul></div></td>@endif</tr>
                     @endforeach
                 </tbody></table></div>
-                <div class="category-pagination"><span>Menampilkan {{ $locations->firstItem() }}–{{ $locations->lastItem() }} dari {{ $locations->total() }} lokasi</span>{{ $locations->links() }}</div>
+                <div class="category-pagination">
+                    <div class="pagination-wrapper">
+                        <span>Tampilkan:</span>
+                        <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                            <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                            <option value="20" @selected(request('per_page') == 20)>20</option>
+                            <option value="50" @selected(request('per_page') == 50)>50</option>
+                            <option value="100" @selected(request('per_page') == 100)>100</option>
+                        </select>
+                        <span>Menampilkan {{ $locations->firstItem() }}–{{ $locations->lastItem() }} dari {{ $locations->total() }} lokasi</span>
+                    </div>
+                    {{ $locations->links() }}
+                </div>
             @endif
         </section>
     </div>

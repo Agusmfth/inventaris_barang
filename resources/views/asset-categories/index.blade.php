@@ -35,7 +35,19 @@
                         </ul></div></td>@endif</tr>
                     @endforeach
                 </tbody></table></div>
-                <div class="category-pagination"><span>Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }} dari {{ $categories->total() }} kategori</span>{{ $categories->links() }}</div>
+                <div class="category-pagination">
+                    <div class="pagination-wrapper">
+                        <span>Tampilkan:</span>
+                        <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                            <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                            <option value="20" @selected(request('per_page') == 20)>20</option>
+                            <option value="50" @selected(request('per_page') == 50)>50</option>
+                            <option value="100" @selected(request('per_page') == 100)>100</option>
+                        </select>
+                        <span>Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }} dari {{ $categories->total() }} kategori</span>
+                    </div>
+                    {{ $categories->links() }}
+                </div>
             @endif
         </section>
     </div>

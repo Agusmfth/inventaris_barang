@@ -14,7 +14,20 @@
         @else
             <div class="category-table-wrap"><table class="category-table asset-table"><thead><tr><th>Kode</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Tahun</th><th>Kondisi</th><th>Status</th><th>Nilai</th><th class="text-end">Aksi</th></tr></thead><tbody>
                 @foreach($assets as $asset)<tr><td><b class="asset-code">{{ $asset->asset_code }}</b></td><td><div class="asset-name-cell"><b>{{ $asset->name }}</b>@if($asset->brand || $asset->model)<small>{{ collect([$asset->brand,$asset->model])->filter()->join(' • ') }}</small>@endif</div></td><td>{{ $asset->category->name }}</td><td>{{ $asset->location->name }}</td><td>{{ $asset->acquisition_year }}</td><td><span class="asset-badge condition-{{ $asset->condition }}">{{ $asset->condition_label }}</span></td><td><span class="asset-badge status-{{ $asset->status }}">{{ $asset->status_label }}</span></td><td><span class="asset-value">Rp {{ number_format((float)$asset->acquisition_price * $asset->quantity,0,',','.') }}</span>@if($asset->quantity > 1)<small class="asset-quantity">{{ $asset->quantity }} barang</small>@endif</td><td class="text-end"><div class="dropdown"><button class="category-action" data-bs-toggle="dropdown"><i data-lucide="ellipsis-vertical"></i></button><ul class="dropdown-menu dropdown-menu-end category-action-menu"><li><a class="dropdown-item" href="{{ route('assets.show',$asset) }}"><i data-lucide="eye"></i>Lihat Detail</a></li>@if(auth()->user()->isAdmin())<li><a class="dropdown-item" href="{{ route('assets.edit',$asset) }}"><i data-lucide="pencil"></i>Edit</a></li><li><a class="dropdown-item" href="{{ route('asset-labels.single',$asset) }}"><i data-lucide="printer"></i>Cetak Label</a></li>@endif</ul></div></td></tr>@endforeach
-            </tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} data aset</span>{{ $assets->links() }}</div>
+            </tbody></table></div>
+            <div class="category-pagination">
+                <div class="pagination-wrapper">
+                    <span>Tampilkan:</span>
+                    <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+                        <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+                        <option value="20" @selected(request('per_page') == 20)>20</option>
+                        <option value="50" @selected(request('per_page') == 50)>50</option>
+                        <option value="100" @selected(request('per_page') == 100)>100</option>
+                    </select>
+                    <span>Menampilkan {{ $assets->firstItem() }}–{{ $assets->lastItem() }} dari {{ $assets->total() }} data aset</span>
+                </div>
+                {{ $assets->links() }}
+            </div>
         @endif
     </section>
 </div>

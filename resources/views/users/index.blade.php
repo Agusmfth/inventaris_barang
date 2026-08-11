@@ -18,7 +18,20 @@
 <li><form method="POST" action="{{ route('users.toggle',$user) }}">@csrf @method('PATCH')<button class="dropdown-item {{ $user->is_active?'text-danger':'' }}" @disabled(auth()->id()===$user->id)><i data-lucide="power"></i>{{ $user->is_active?'Nonaktifkan':'Aktifkan' }}</button></form></li>
 </ul></div></td></tr>
 @endforeach
-</tbody></table></div><div class="category-pagination"><span>Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }} dari {{ $users->total() }} pengguna</span>{{ $users->links() }}</div>
+</tbody></table></div>
+<div class="category-pagination">
+    <div class="pagination-wrapper">
+        <span>Tampilkan:</span>
+        <select class="per-page-select" onchange="const url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.toString();">
+            <option value="10" @selected(request('per_page', 10) == 10)>10</option>
+            <option value="20" @selected(request('per_page') == 20)>20</option>
+            <option value="50" @selected(request('per_page') == 50)>50</option>
+            <option value="100" @selected(request('per_page') == 100)>100</option>
+        </select>
+        <span>Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }} dari {{ $users->total() }} pengguna</span>
+    </div>
+    {{ $users->links() }}
+</div>
 @endif
 </section></div>
 @include('users.partials.modals')
