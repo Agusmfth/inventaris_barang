@@ -1,15 +1,92 @@
-document.addEventListener('DOMContentLoaded',()=>{const form=document.getElementById('disposalForm');if(!form)return;const search=document.getElementById('disposalAssetSearch'),select=document.getElementById('disposalAsset'),results=document.getElementById('disposalAssetResults'),meta=document.querySelectorAll('.disposal-asset-meta b'),condition=document.getElementById('disposalCondition');const conditionDisplay=document.createElement('input');conditionDisplay.type='text';conditionDisplay.className='form-control disposal-condition-readonly';conditionDisplay.value='Pilih aset terlebih dahulu';conditionDisplay.readOnly=true;conditionDisplay.setAttribute('aria-label','Kondisi aset otomatis');condition.hidden=true;condition.required=false;condition.insertAdjacentElement('afterend',conditionDisplay);select.selectedIndex=-1;const close=()=>results.classList.remove('show');const choose=o=>{select.value=o.value;search.value=o.text.trim();search.setCustomValidity('');meta[0].textContent=o.dataset.location;meta[1].textContent=o.dataset.condition;meta[2].textContent=o.dataset.status;condition.value=o.dataset.conditionKey;conditionDisplay.value=o.dataset.condition;close()};const render=()=>{const needle=search.value.toLowerCase();results.innerHTML='';[...select.options].filter(o=>o.text.toLowerCase().includes(needle)).slice(0,8).forEach(o=>{const b=document.createElement('button');b.type='button';b.className='disposal-asset-option';b.innerHTML=`<b>${o.dataset.code}</b><span>${o.dataset.name}</span><small>${o.dataset.location}</small>`;b.onmousedown=e=>{e.preventDefault();choose(o)};results.appendChild(b)});results.classList.add('show')};search.onfocus=render;search.oninput=()=>{select.selectedIndex=-1;condition.value='';conditionDisplay.value='Pilih aset terlebih dahulu';render()};search.onblur=()=>setTimeout(close,120);document.getElementById('reviewDisposal').onclick=()=>{if(!select.value)search.setCustomValidity('Pilih aset dari daftar.');if(!form.reportValidity())return;const o=select.options[select.selectedIndex],method=document.getElementById('disposalMethod'),reason=document.getElementById('disposalReason').value;document.getElementById('disposalConfirm').innerHTML=`<div><dt>Nama aset</dt><dd>${o.dataset.name}</dd></div><div><dt>Kode aset</dt><dd>${o.dataset.code}</dd></div><div><dt>Kondisi</dt><dd>${o.dataset.condition}</dd></div><div><dt>Alasan</dt><dd>${reason}</dd></div><div><dt>Metode</dt><dd>${method.options[method.selectedIndex].text}</dd></div>`;bootstrap.Modal.getOrCreateInstance(document.getElementById('disposalModal')).hide();bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmDisposalModal')).show()};document.getElementById('confirmDisposal').onclick=()=>{if(form.dataset.submitting)return;form.dataset.submitting='1';form.submit()};});
-document.addEventListener('DOMContentLoaded',()=>{
-    const toolbarDate=document.querySelector('.disposal-toolbar input[type="date"]');
-    if(!toolbarDate)return;
-    const wrapper=document.createElement('div');
-    wrapper.className='disposal-date-filter';
-    const placeholder=document.createElement('span');
-    placeholder.textContent='Tanggal penghapusan';
-    toolbarDate.parentNode.insertBefore(wrapper,toolbarDate);
-    wrapper.append(toolbarDate,placeholder);
-    const sync=()=>wrapper.classList.toggle('has-value',Boolean(toolbarDate.value));
-    toolbarDate.addEventListener('input',sync);
-    toolbarDate.addEventListener('change',sync);
-    sync();
-});
+const initAssetDisposals = () => {
+    const container = document.querySelector('.disposal-page');
+    if (!container || container.dataset.initialized === '1') return;
+    container.dataset.initialized = '1';
+
+    const form = document.getElementById('disposalForm');
+    if (form) {
+        const search = document.getElementById('disposalAssetSearch'),
+            select = document.getElementById('disposalAsset'),
+            results = document.getElementById('disposalAssetResults'),
+            meta = document.querySelectorAll('.disposal-asset-meta b'),
+            condition = document.getElementById('disposalCondition');
+        const conditionDisplay = document.createElement('input');
+        conditionDisplay.type = 'text';
+        conditionDisplay.className = 'form-control disposal-condition-readonly';
+        conditionDisplay.value = 'Pilih aset terlebih dahulu';
+        conditionDisplay.readOnly = true;
+        conditionDisplay.setAttribute('aria-label', 'Kondisi aset otomatis');
+        condition.hidden = true;
+        condition.required = false;
+        condition.insertAdjacentElement('afterend', conditionDisplay);
+        select.selectedIndex = -1;
+        const close = () => results.classList.remove('show');
+        const choose = o => {
+            select.value = o.value;
+            search.value = o.text.trim();
+            search.setCustomValidity('');
+            meta[0].textContent = o.dataset.location;
+            meta[1].textContent = o.dataset.condition;
+            meta[2].textContent = o.dataset.status;
+            condition.value = o.dataset.conditionKey;
+            conditionDisplay.value = o.dataset.condition;
+            close()
+        };
+        const render = () => {
+            const needle = search.value.toLowerCase();
+            results.innerHTML = '';
+            [...select.options].filter(o => o.text.toLowerCase().includes(needle)).slice(0, 8).forEach(o => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'disposal-asset-option';
+                b.innerHTML = `<b>${o.dataset.code}</b><span>${o.dataset.name}</span><small>${o.dataset.location}</small>`;
+                b.onmousedown = e => {
+                    e.preventDefault();
+                    choose(o)
+                };
+                results.appendChild(b)
+            });
+            results.classList.add('show')
+        };
+        search.onfocus = render;
+        search.oninput = () => {
+            select.selectedIndex = -1;
+            condition.value = '';
+            conditionDisplay.value = 'Pilih aset terlebih dahulu';
+            render()
+        };
+        search.onblur = () => setTimeout(close, 120);
+        document.getElementById('reviewDisposal').onclick = () => {
+            if (!select.value) search.setCustomValidity('Pilih aset dari daftar.');
+            if (!form.reportValidity()) return;
+            const o = select.options[select.selectedIndex],
+                method = document.getElementById('disposalMethod'),
+                reason = document.getElementById('disposalReason').value;
+            document.getElementById('disposalConfirm').innerHTML = `<div><dt>Nama aset</dt><dd>${o.dataset.name}</dd></div><div><dt>Kode aset</dt><dd>${o.dataset.code}</dd></div><div><dt>Kondisi</dt><dd>${o.dataset.condition}</dd></div><div><dt>Alasan</dt><dd>${reason}</dd></div><div><dt>Metode</dt><dd>${method.options[method.selectedIndex].text}</dd></div>`;
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('disposalModal')).hide();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmDisposalModal')).show()
+        };
+        document.getElementById('confirmDisposal').onclick = () => {
+            if (form.dataset.submitting) return;
+            form.dataset.submitting = '1';
+            form.submit()
+        };
+    }
+
+    const toolbarDate = document.querySelector('.disposal-toolbar input[type="date"]');
+    if (toolbarDate) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'disposal-date-filter';
+        const placeholder = document.createElement('span');
+        placeholder.textContent = 'Tanggal penghapusan';
+        toolbarDate.parentNode.insertBefore(wrapper, toolbarDate);
+        wrapper.append(toolbarDate, placeholder);
+        const sync = () => wrapper.classList.toggle('has-value', Boolean(toolbarDate.value));
+        toolbarDate.addEventListener('input', sync);
+        toolbarDate.addEventListener('change', sync);
+        sync();
+    }
+};
+
+initAssetDisposals();
+document.addEventListener('turbo:load', initAssetDisposals);

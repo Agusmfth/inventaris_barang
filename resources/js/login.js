@@ -1,5 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initLogin = () => {
     const form = document.getElementById('loginForm');
+    if (!form || form.dataset.initialized === '1') return;
+    form.dataset.initialized = '1';
+
     const submit = document.getElementById('loginSubmit');
     const password = document.getElementById('password');
     const toggle = document.getElementById('togglePassword');
@@ -59,4 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.addEventListener('pagehide', resetLoginFeedback);
     window.addEventListener('pageshow', event => { resetLoginFeedback(); if (event.persisted) window.location.reload(); });
-});
+};
+
+initLogin();
+document.addEventListener('turbo:load', initLogin);

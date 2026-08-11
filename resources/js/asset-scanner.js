@@ -1,9 +1,10 @@
 import { Html5Qrcode } from 'html5-qrcode';
 
-document.addEventListener('DOMContentLoaded', () => {
+const initAssetScanner = () => {
     const root = document.getElementById('assetScanner');
-    if (!root || root.dataset.ready) return;
-    root.dataset.ready = '1';
+    if (!root || root.dataset.initialized === '1') return;
+    root.dataset.initialized = '1';
+
     const reader = new Html5Qrcode('qrReader', { verbose: false });
     const startButton = document.getElementById('startScanner'), stopButton = document.getElementById('stopScanner'), switchButton = document.getElementById('switchCamera');
     const placeholder = document.getElementById('scannerPlaceholder'), result = document.getElementById('scannerResult');
@@ -63,4 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     manualForm.addEventListener('submit', event => { event.preventDefault(); const value = manualCode.value.trim(); if (!value) { showResult('error', 'Kode aset belum diisi', 'Masukkan kode aset, misalnya AST-2026-0001.'); manualCode.focus(); return; } resolving = false; resolveAsset(value, 'manual'); });
     document.addEventListener('turbo:before-visit', stop, { once: true });
     window.addEventListener('pagehide', stop, { once: true });
-});
+};
+
+initAssetScanner();
+document.addEventListener('turbo:load', initAssetScanner);

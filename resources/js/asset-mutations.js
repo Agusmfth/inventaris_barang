@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initAssetMutations = () => {
+    const container = document.querySelector('.mutation-page');
+    if (!container || container.dataset.initialized === '1') return;
+    container.dataset.initialized = '1';
+
     const asset = document.getElementById('mutationAsset');
     const search = document.getElementById('assetSearch');
     const destination = document.getElementById('toLocation');
@@ -90,4 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         form.submit();
     });
     if (window.mutationHasErrors) bootstrap.Modal.getOrCreateInstance(document.getElementById('mutationModal')).show();
-});
+};
+
+initAssetMutations();
+document.addEventListener('turbo:load', initAssetMutations);

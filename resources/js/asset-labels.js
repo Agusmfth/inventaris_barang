@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+const initAssetLabels = () => {
+    const form = document.getElementById('labelSelectionForm');
+    if (!form || form.dataset.initialized === '1') return;
+    form.dataset.initialized = '1';
+
     const selectors = [...document.querySelectorAll('.asset-selector')];
     const selectAll = document.getElementById('selectAllAssets');
     const count = document.getElementById('selectedAssetCount');
@@ -6,8 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const liveCards = document.getElementById('labelLiveCards');
     const liveEmpty = document.getElementById('labelLiveEmpty');
     const liveCount = document.getElementById('labelLiveCount');
-    const form = document.getElementById('labelSelectionForm');
-    if (!form || !count || !button) return;
 
     const schoolName = form.dataset.schoolName || 'KOPERASI DESA';
     const schoolMark = form.dataset.schoolMark || 'INVENTARIS\nKOPERASI DESA';
@@ -92,4 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectAll?.addEventListener('change', () => { selectors.forEach(item => item.checked = selectAll.checked); update(); });
     document.addEventListener('app:submit-reset', update, { once: true });
     update();
-});
+};
+
+initAssetLabels();
+document.addEventListener('turbo:load', initAssetLabels);

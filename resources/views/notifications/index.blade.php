@@ -10,5 +10,5 @@
         <span>Menampilkan {{ $notifications->firstItem() }}–{{ $notifications->lastItem() }} dari {{ $notifications->total() }} notifikasi</span>
     </div>
     {{ $notifications->links() }}
-</div>
+</div>@endif
 </section></div></x-app-layout>
