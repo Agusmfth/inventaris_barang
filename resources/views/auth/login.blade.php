@@ -56,7 +56,7 @@
                 <div class="auth-inline-alert error" role="alert"><i data-lucide="circle-alert"></i><span>{{ $errors->first('login') }}</span></div>
             @endif
 
-            <form method="POST" action="{{ route('login.store') }}" id="loginForm" novalidate>
+            <form method="POST" action="{{ route('login.store') }}" id="loginForm" data-no-submit-loading novalidate>
                 @csrf
                 <div class="auth-field">
                     <label for="username">Username</label>

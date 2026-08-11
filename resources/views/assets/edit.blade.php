@@ -2,7 +2,7 @@
 <div class="category-page asset-form-page">
     <nav aria-label="breadcrumb"><ol class="breadcrumb category-breadcrumb"><li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li><li class="breadcrumb-item">Inventaris</li><li class="breadcrumb-item"><a href="{{ route('assets.index') }}">Data Aset</a></li><li class="breadcrumb-item"><a href="{{ route('assets.show',$asset) }}">Detail Aset</a></li><li class="breadcrumb-item active">Edit Aset</li></ol></nav>
     <header class="category-page-header asset-form-header"><div><h1>Edit Aset</h1><p>Perbarui informasi barang inventaris sekolah.</p></div><div class="auto-code-note"><i data-lucide="lock-keyhole"></i>{{ $asset->asset_code }}</div></header>
-    <form method="POST" action="{{ route('assets.update',$asset) }}" enctype="multipart/form-data" id="assetForm">@csrf @method('PUT')
+    <form method="POST" action="{{ route('assets.update',$asset) }}" enctype="multipart/form-data" id="assetForm" data-no-submit-loading>@csrf @method('PUT')
         <section class="asset-form-card"><div class="asset-section-heading"><span>01</span><div><h2>Informasi Utama</h2><p>Identitas dan klasifikasi barang inventaris.</p></div></div><div class="asset-form-grid">
             <div class="asset-field span-2"><label>Kode Inventaris</label><input value="{{ $asset->asset_code }}" class="form-control asset-code-readonly" disabled><small>Kode inventaris tidak dapat diubah.</small></div>
             <div class="asset-field span-2"><label for="name">Nama Aset <b>*</b></label><input id="name" name="name" value="{{ old('name',$asset->name) }}" class="form-control @error('name') is-invalid @enderror">@error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>

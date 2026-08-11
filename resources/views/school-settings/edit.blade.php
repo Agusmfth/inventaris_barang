@@ -2,7 +2,7 @@
 <div class="category-page asset-form-page school-setting-page">
     <nav aria-label="breadcrumb"><ol class="breadcrumb category-breadcrumb"><li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li><li class="breadcrumb-item">Pengaturan</li><li class="breadcrumb-item active">Identitas Sekolah</li></ol></nav>
     <header class="category-page-header"><div><h1>Identitas Sekolah</h1><p>Kelola identitas sekolah yang digunakan pada sistem dan dokumen inventaris.</p></div></header>
-    <form method="POST" action="{{ route('school-settings.update') }}" enctype="multipart/form-data" id="schoolSettingForm">@csrf @method('PUT')
+    <form method="POST" action="{{ route('school-settings.update') }}" enctype="multipart/form-data" id="schoolSettingForm" data-no-submit-loading>@csrf @method('PUT')
         <section class="asset-form-card"><div class="asset-section-heading"><span>01</span><div><h2>Identitas</h2><p>Informasi utama satuan pendidikan.</p></div></div><div class="asset-form-grid">
             <div class="asset-field span-2"><label for="school_name">Nama Sekolah <b>*</b></label><input id="school_name" name="school_name" value="{{ old('school_name',$setting->school_name) }}" class="form-control @error('school_name') is-invalid @enderror">@error('school_name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
             <div class="asset-field"><label for="npsn">NPSN</label><input id="npsn" name="npsn" value="{{ old('npsn',$setting->npsn) }}" class="form-control @error('npsn') is-invalid @enderror" placeholder="Nomor Pokok Sekolah Nasional">@error('npsn')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
